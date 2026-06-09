@@ -1,0 +1,98 @@
+# ============================================
+# ADDMILL - cPanel .htaccess Configuration
+# Upload this file with your website to public_html
+# ============================================
+
+# --- Security ---
+
+# Prevent directory browsing
+Options -Indexes
+
+# Block access to hidden files (.htaccess, .env, etc.)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect against clickjacking
+Header always append X-Frame-Options SAMEORIGIN
+
+# XSS Protection
+Header set X-XSS-Protection "1; mode=block"
+
+# Prevent MIME-type sniffing
+Header set X-Content-Type-Options "nosniff"
+
+# Referrer Policy
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+# --- Performance / Caching ---
+
+# Enable Gzip compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# Browser caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Images - cache 1 year
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+
+    # Video - cache 1 year
+    ExpiresByType video/mp4 "access plus 1 year"
+
+    # CSS & JS - cache 1 month
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+
+    # HTML - cache 1 day
+    ExpiresByType text/html "access plus 1 day"
+
+    # Fonts - cache 1 year
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# --- URL Rewriting ---
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Force HTTPS (uncomment when SSL is active)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Remove www (uncomment if you prefer non-www)
+    # RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    # RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+    # Handle 404 errors
+    ErrorDocument 404 /index.html
+</IfModule>
+
+# --- MIME Types ---
+
+# Ensure .webp files are served correctly
+AddType image/webp .webp
+
+# Ensure .mp4 files are served correctly
+AddType video/mp4 .mp4
+
+# Ensure proper character encoding
+AddDefaultCharset UTF-8
